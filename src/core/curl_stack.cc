@@ -134,16 +134,9 @@ CurlStack::process_done_handle() {
 
   if (msg->data.result == CURLE_COULDNT_RESOLVE_HOST) {
     iterator itr = std::find_if(begin(), end(), rak::equal(msg->easy_handle, std::mem_fun(&CurlGet::handle)));
- 
+
     if (itr == end())
       throw torrent::internal_error("Could not find CurlGet when calling CurlStack::receive_action.");
- 
-    if (!(*itr)->is_using_ipv6()) {
-      (*itr)->retry_ipv6();
-
-      if (curl_multi_add_handle((CURLM*)m_handle, (*itr)->handle()) > 0)
-        throw torrent::internal_error("Error calling curl_multi_add_handle.");
-    }
 
   } else {
     transfer_done(msg->easy_handle,
